@@ -39,6 +39,9 @@
                         {{ config('app.name') }}
                     </h1>
 
+                    {{ App\User::count() }} <br>
+                    {{ App\User::where('tenant_id', 1)->count() }}
+
                     <ul class="list-reset">
                         <li class="inline px-4">
                             <a href="https://tailwindcss.com" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">Tailwind CSS</a>
