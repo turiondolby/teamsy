@@ -2,11 +2,12 @@
 
 namespace App\Http\Livewire\Auth;
 
-use App\Providers\RouteServiceProvider;
 use App\User;
+use App\Tenant;
+use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Component;
+use App\Providers\RouteServiceProvider;
 
 class Register extends Component
 {
@@ -14,26 +15,33 @@ class Register extends Component
     public $name = '';
 
     /** @var string */
+    public $companyName = '';
+
+    /** @var string */
     public $email = '';
 
     /** @var string */
     public $password = '';
 
-    /** @var string */
-    public $passwordConfirmation = '';
-
     public function register()
     {
         $this->validate([
-            'name' => ['required'],
+            'name' => ['required', 'string'],
+            'companyName' => ['required', 'string', 'unique:tenants,name'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:8', 'same:passwordConfirmation'],
+            'password' => ['required', 'min:8'],
+        ]);
+
+        $tenant = Tenant::create([
+            'name' => $this->companyName,
         ]);
 
         $user = User::create([
             'email' => $this->email,
             'name' => $this->name,
+            'role' => 'admin',
             'password' => Hash::make($this->password),
+            'tenant_id' => $tenant->id,
         ]);
 
         $user->sendEmailVerificationNotification();
